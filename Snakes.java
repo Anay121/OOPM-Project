@@ -5,27 +5,33 @@ import java.util.*;
 import java.lang.*;
 
 
-import javax.swing.JOptionPane;
+//import javax.swing.JOptionPane;
 
 class Snakes extends JFrame implements KeyListener,Runnable{  
 	
 	Thread t=null;
-	int food_x;
+	int food_x;//coordinates of food
 	int food_y;
-	int snake_x[]=new int[900];
+	int snake_x[]=new int[900];//coordinates of every part of snake
 	int snake_y[]=new int[900];
-	int size;
+	int size;//size of snake
 	static final int dim=10;
-	private boolean UP=false;
+	private boolean UP=false;//direction
 	private boolean DOWN=false;
 	private boolean LEFT=false;
 	private boolean RIGHT=true;
-	static final int max=300;
-	static final int min=0;
+	static final int max_y=330;//size of frame
+	static final int max_x=310;
+	static final int min_y=30;
+	static final int min_x=10;
 	static int TIME_DELAY=300;
 	private boolean gameover=false;
 	static int score=0;
 	Random r=new Random();
+	
+	public static void main(String args[]){//main function
+		new Snakes();
+	}
 	
 	public Snakes(){
 		/*timer = new javax.swing.Timer(TIME_DELAY, new TimerListener());
@@ -33,26 +39,26 @@ class Snakes extends JFrame implements KeyListener,Runnable{
 		t=new Thread(this);
 		t.start();
         addKeyListener(this);
-		getContentPane().setBackground(Color.BLACK);
+		getContentPane().setBackground(Color.BLACK);//set background
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(max+20 , max+20 );
+        setSize(330, 350 );//size of frame
         setVisible(true);
 		initGame();
 	}
 	
-	public void initGame(){
+	public void initGame(){//start the game with snake of size 3
 		size=3;
 		for(int i=0;i<size;i++){
-			snake_x[i]=(50-dim*i);
-			snake_y[i]=(50);
+			snake_x[i]=(100-dim*i);
+			snake_y[i]=(100);
 		}
 		locateFood();
 	}
-	public void locateFood(){
+	public void locateFood(){//generate food at random positions 
 		food_x=((r.nextInt(290))*10);
-		food_x=(Math.abs(food_x))%290;
+		food_x=((Math.abs(food_x))%290)+20;
 		food_y=((r.nextInt(290))*10);
-		food_y=(Math.abs(food_y))%290;
+		food_y=((Math.abs(food_y))%290)+40;
 		System.out.println("Food: "+food_x+" "+food_y);
 	}
 	
@@ -69,39 +75,46 @@ class Snakes extends JFrame implements KeyListener,Runnable{
 	public void paint(Graphics g){
 		super.paint(g);
 		g.setColor(Color.white);
-        g.drawRect(5, 5, max+5, max+5);
+        g.drawRect(min_x+10, min_y+10, 290, 290);
         if(gameover){
 			Font f1 = new Font("Arial",Font.BOLD,30);  
 			g.setFont(f1);
 			g.setColor(Color.blue);
 			t.stop();
-			g.drawString("GAME OVER",50,100);
-			g.drawString("YOUR SCORE: "+score,35,140);
+			g.drawString("GAME OVER",75,170);
+			g.drawString("YOUR SCORE: "+score,45,220);
 		}
 		else{
 			drawSnake(g);
 			drawFood(g);
 		}
     }
-
-	public void Check(){
+//snake_x[0],snake_y[0] are coordinates of head of snake 
+	public void Check(){//check for game over or snake has eaten food
 		if(snake_x[0]==food_x && snake_y[0]==food_y){
 			size++;
 			score+=5;
 			locateFood();
 		}
-		if(snake_x[0]>=max || snake_x[0]<=min || snake_y[0]>=max || snake_y[0]<=min || score>=4500){
+		if(snake_x[0]>=max_x || snake_x[0]<=min_x || snake_y[0]>=max_y || snake_y[0]<=min_y || score>=4500){
 			gameover=true;
 		}
+		for(int i=3;i<size;i++){
+			if(snake_x[0]==snake_x[i] && snake_y[0]==snake_y[i]){
+				gameover=true;
+				break;
+			}
+		}
+		
 	}	
-	public void run(){
+	public void run(){//threading
 		for(int k=0;;k++){
 			try{
 				Thread.sleep(TIME_DELAY);
-				if(size%3==0){
+				if(size%3==0){//decrease sleep time as size increases
 					TIME_DELAY--;
 				}
-				for(int i=size-1;i>0;i--){
+				for(int i=size-1;i>0;i--){//shift coordinates one position to the front ie snake[1]=snake[0] and so on
 					snake_x[i]=snake_x[i-1];
 					snake_y[i]=snake_y[i-1];
 				}
@@ -126,7 +139,7 @@ class Snakes extends JFrame implements KeyListener,Runnable{
 		}
 	}
 	
-	public void keyTyped(KeyEvent e) {
+	public void keyTyped(KeyEvent e) {//check key pressed
     }
 	public void keyPressed(KeyEvent e) {
         //displayInfo(e, "KEY PRESSED: ");
@@ -152,13 +165,7 @@ class Snakes extends JFrame implements KeyListener,Runnable{
             UP = true;
             DOWN = LEFT = RIGHT = false;
         }
-		//move();
-        //repaint();
     }
 	public void keyReleased(KeyEvent e) {
     }
-	
-	public static void main(String args[]){
-		new Snakes();
-	}
 }
