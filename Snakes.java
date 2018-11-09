@@ -10,6 +10,7 @@ import java.lang.*;
 class Snakes extends JFrame implements KeyListener,Runnable{  
 	
 	Thread t=null;
+	String name="Player";
 	int food_x;//coordinates of food
 	int food_y;
 	int snake_x[]=new int[900];//coordinates of every part of snake
@@ -35,14 +36,14 @@ class Snakes extends JFrame implements KeyListener,Runnable{
 	
 	public Snakes(){
 		/*timer = new javax.swing.Timer(TIME_DELAY, new TimerListener());
-        timer.start();*/
+        	timer.start();*/
 		t=new Thread(this);
 		t.start();
-        addKeyListener(this);
+       	 	addKeyListener(this);
 		getContentPane().setBackground(Color.BLACK);//set background
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(330, 350 );//size of frame
-        setVisible(true);
+        	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        	setSize(330, 360 );//size of frame
+        	setVisible(true);
 		initGame();
 	}
 	
@@ -75,8 +76,8 @@ class Snakes extends JFrame implements KeyListener,Runnable{
 	public void paint(Graphics g){
 		super.paint(g);
 		g.setColor(Color.white);
-        g.drawRect(min_x+10, min_y+10, 290, 290);
-        if(gameover){
+        	g.drawRect(min_x+10, min_y+10, 290, 290);
+        	if(gameover){
 			Font f1 = new Font("Arial",Font.BOLD,30);  
 			g.setFont(f1);
 			g.setColor(Color.blue);
@@ -85,6 +86,8 @@ class Snakes extends JFrame implements KeyListener,Runnable{
 			g.drawString("YOUR SCORE: "+score,45,220);
 		}
 		else{
+			g.drawString("Player: "+name,30,345);
+			g.drawString("Score: "+score,250,345);
 			drawSnake(g);
 			drawFood(g);
 		}
