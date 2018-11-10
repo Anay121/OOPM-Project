@@ -30,7 +30,7 @@ public class reversi extends JFrame implements MouseListener
 		super("Reversi");
 		addMouseListener(this);
 		setSize(600, 600);
-		getContentPane().setBackground(Color.black);
+		getContentPane().setBackground(new Color(20, 133, 56));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
 		for(int i=0; i<8; i++)
@@ -61,7 +61,7 @@ public class reversi extends JFrame implements MouseListener
 			}
 			else
 			{
-				g.setColor(Color.green);
+				g.setColor(Color.black);
 				g.drawRect(250, 505, 200, 30);
 			}
 			for(int i=0; i<8; i++)
@@ -77,7 +77,7 @@ public class reversi extends JFrame implements MouseListener
 					}
 					else if(board[i][j] == 1)
 					{
-						g.setColor(Color.green);
+						g.setColor(Color.black);
 						g.fillOval(boxleft+box_size*i + 5, boxtop+box_size*j + 5, box_size - 10, box_size - 10);
 					}
 				}
