@@ -37,13 +37,15 @@ class Snakes extends JFrame implements KeyListener,Runnable{
 	public Snakes(){
 		/*timer = new javax.swing.Timer(TIME_DELAY, new TimerListener());
         	timer.start();*/
+        super("Snakes Game ");
 		t=new Thread(this);
 		t.start();
-       	 	addKeyListener(this);
+       	addKeyListener(this);
 		getContentPane().setBackground(Color.BLACK);//set background
-        	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        	setSize(330, 360 );//size of frame
-        	setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(330, 360);//size of frame
+
+        setVisible(true);
 		initGame();
 	}
 	
@@ -64,8 +66,10 @@ class Snakes extends JFrame implements KeyListener,Runnable{
 	}
 	
 	public void drawSnake(Graphics g){
+		g.setColor(Color.orange);
+		g.fillOval(snake_x[0], snake_y[0], dim, dim);
 		g.setColor(Color.white);
-		for(int j=0;j<size;j++){
+		for(int j=1;j<size;j++){
 			g.fillOval(snake_x[j],snake_y[j],dim,dim);
 		}
 	}
@@ -78,12 +82,14 @@ class Snakes extends JFrame implements KeyListener,Runnable{
 		g.setColor(Color.white);
         	g.drawRect(min_x+10, min_y+10, 290, 290);
         	if(gameover){
+
 			Font f1 = new Font("Arial",Font.BOLD,30);  
 			g.setFont(f1);
 			g.setColor(Color.blue);
 			t.stop();
 			g.drawString("GAME OVER",75,170);
-			g.drawString("YOUR SCORE: "+score,45,220);
+			g.drawString("YOUR SCORE: "+score,25,220);
+
 		}
 		else{
 			g.drawString("Player: "+name,30,345);
@@ -102,7 +108,7 @@ class Snakes extends JFrame implements KeyListener,Runnable{
 		if(snake_x[0]>=max_x || snake_x[0]<=min_x || snake_y[0]>=max_y || snake_y[0]<=min_y || score>=4500){
 			gameover=true;
 		}
-		for(int i=3;i<size;i++){
+		for(int i=1;i<size;i++){
 			if(snake_x[0]==snake_x[i] && snake_y[0]==snake_y[i]){
 				gameover=true;
 				break;
@@ -111,7 +117,7 @@ class Snakes extends JFrame implements KeyListener,Runnable{
 		
 	}	
 	public void run(){//threading
-		for(int k=0;;k++){
+		while(true){
 			try{
 				Thread.sleep(TIME_DELAY);
 				if(size%3==0){//decrease sleep time as size increases
