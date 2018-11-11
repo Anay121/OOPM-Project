@@ -37,13 +37,13 @@ class Snakes extends JFrame implements KeyListener,Runnable{
 	public Snakes(){
 		/*timer = new javax.swing.Timer(TIME_DELAY, new TimerListener());
         	timer.start();*/
-        super("Snakes Game ");
+        	super("Snakes Game ");
 		t=new Thread(this);
 		t.start();
-       	addKeyListener(this);
+       		addKeyListener(this);
 		getContentPane().setBackground(Color.BLACK);//set background
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(330, 360);//size of frame
+        	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        	setSize(330, 360);//size of frame
 
         setVisible(true);
 		initGame();
@@ -120,7 +120,7 @@ class Snakes extends JFrame implements KeyListener,Runnable{
 		while(true){
 			try{
 				Thread.sleep(TIME_DELAY);
-				if(size%3==0){//decrease sleep time as size increases
+				if(size%3==0 && TIME_DELAY>=100){//decrease sleep time as size increases
 					TIME_DELAY--;
 				}
 				for(int i=size-1;i>0;i--){//shift coordinates one position to the front ie snake[1]=snake[0] and so on
@@ -159,17 +159,17 @@ class Snakes extends JFrame implements KeyListener,Runnable{
             LEFT = true;
             RIGHT = UP = DOWN = false;
         }
-        if (keyCode == KeyEvent.VK_RIGHT) // Left arrow key
+        if (keyCode == KeyEvent.VK_RIGHT) // Right arrow key
         {
             RIGHT = true;
             LEFT = UP = DOWN = false;
         }
-        if (keyCode == KeyEvent.VK_DOWN) // Left arrow key
+        if (keyCode == KeyEvent.VK_DOWN) // Down arrow key
         {
             DOWN = true;
             UP = LEFT = RIGHT = false;
         }
-        if (keyCode == KeyEvent.VK_UP) // Left arrow key
+        if (keyCode == KeyEvent.VK_UP) // Up arrow key
         {
             UP = true;
             DOWN = LEFT = RIGHT = false;
