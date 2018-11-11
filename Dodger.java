@@ -5,8 +5,7 @@ import java.awt.*;
 import javax.swing.*;
 
 class dodger extends JFrame implements KeyListener
-{
-	
+{	
 	String player = "Player";
 	private int rock_size = 20;
 	private int rock_x[] = new int[50];
@@ -27,6 +26,17 @@ class dodger extends JFrame implements KeyListener
 	new dodger();	
 	}
 
+	public dodger()
+	{
+		super("Dodger");
+		addKeyListener(this);
+		setSize(720, 620);
+		getContentPane().setBackground(Color.black);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setVisible(true);
+		play();
+	}
+	
 	public void paint(Graphics g)
 	{
 		super.paint(g);
@@ -36,7 +46,7 @@ class dodger extends JFrame implements KeyListener
 			g.drawRect(50, 50, frame_size+110, frame_size);
 			g.setFont(new Font("Arial", Font.PLAIN, 18));
 			g.drawString("Player: " + player, 50, 580);
-			g.drawString("Score: " + score, 200, 580);
+			g.drawString("Score: " + score, 550, 580);
 			g.setColor(Color.gray);
 			for(int i=front; i != rear; i = (i+1)%50 )
 				g.fillRect(rock_x[i], rock_y[i], rock_size, rock_size);
@@ -45,22 +55,12 @@ class dodger extends JFrame implements KeyListener
 		}
 		else
 		{
-			g.setColor(Color.white);
-			g.setFont(new Font("Arial", Font.BOLD, 30));
-			g.drawString("Game Over!!", 100, 100);
-			g.drawString("Your Score is: "+ score, 100, 140);
+			g.setColor(Color.blue);
+			g.setFont(new Font("Arial", Font.BOLD, 35));
+			g.drawString("Game Over!!", 250, 300);
+			g.drawString("Your Score is: "+ score, 220, 340);
 		}
 		
-	}
-	public dodger()
-	{
-		super("Dodger");
-		addKeyListener(this);
-		setSize(800, 800);
-		getContentPane().setBackground(Color.black);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setVisible(true);
-		play();
 	}
 
 	public void check()									//Occurs at movement and rocks moving down to check if player and rocks collide
@@ -94,8 +94,10 @@ class dodger extends JFrame implements KeyListener
 				for(int i=front; i!=rear; i = (i+1)%50 )
 				{	
 					rock_y[i] += 40;
-					if(rock_y[i] >= frame_size + frame_top)
+					if(rock_y[i] >= frame_size + frame_top){
 						front = (front +1)%50;
+						score++;
+					}
 				}
 				rock_x[rear] = x;
 				rock_y[rear] = y;
@@ -112,7 +114,6 @@ class dodger extends JFrame implements KeyListener
 					rock_y[rear] = y;
 					rear = (rear+1)%50;
 				}
-				score += 4;
 				check();				
 				repaint();
 			}
@@ -124,10 +125,15 @@ class dodger extends JFrame implements KeyListener
 	public void keyTyped(KeyEvent e) { 
     }
 	public void keyPressed(KeyEvent e) {        
-    	if(e.getKeyCode() == KeyEvent.VK_RIGHT)					//Only left and right movement possible
-    		player_x += 20;
+    	if(e.getKeyCode() == KeyEvent.VK_RIGHT){					//Only left and right movement possible
+    		if(player_x<frame_size+130){
+				player_x += 20;
+			}
+		}
     	else if (e.getKeyCode() == KeyEvent.VK_LEFT)
-    		player_x -= 20;
+    		if(player_x>frame_left){
+				player_x -= 20;
+			}
     	check();
     	repaint();
     }
