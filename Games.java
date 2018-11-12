@@ -1,7 +1,10 @@
 import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.JOptionPane;
 import java.util.*;
 //import java.lang.*;
 
@@ -143,7 +146,7 @@ class Snakes extends JFrame implements KeyListener,Runnable{
        	addKeyListener(this);
 		getContentPane().setBackground(Color.BLACK);//set background
         //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(330, 360);//size of frame
+        setSize(500, 360);//size of frame
         setVisible(true);
 		this.name=name;
 		initGame();
@@ -162,7 +165,6 @@ class Snakes extends JFrame implements KeyListener,Runnable{
 		food_x=((Math.abs(food_x))%290)+20;
 		food_y=((r.nextInt(290))*10);
 		food_y=((Math.abs(food_y))%290)+40;
-		//System.out.println("Food: "+food_x+" "+food_y);
 	}
 	
 	public void drawSnake(Graphics g){
@@ -181,8 +183,7 @@ class Snakes extends JFrame implements KeyListener,Runnable{
 		super.paint(g);
 		g.setColor(Color.white);
         g.drawRect(min_x+10, min_y+10, 290, 290);
-        	if(gameover){
-
+        if(gameover){
 			Font f1 = new Font("Arial",Font.BOLD,30);  
 			g.setFont(f1);
 			g.setColor(Color.blue);
@@ -191,13 +192,14 @@ class Snakes extends JFrame implements KeyListener,Runnable{
 			g.drawString("YOUR SCORE: "+score,45,220);
 			g.setFont(new Font("Arial", Font.PLAIN, 17));
 			g.drawString("Press any key to exit", 90, 270);
-
+			
 		}
 		else{
 			g.drawString("Player: "+name,30,345);
 			g.drawString("Score: "+score,250,345);
 			drawSnake(g);
 			drawFood(g);
+			getHighScores(330,g);
 		}
     }
 		//snake_x[0],snake_y[0] are coordinates of head of snake 
@@ -241,7 +243,6 @@ class Snakes extends JFrame implements KeyListener,Runnable{
 				else if(RIGHT){
 					snake_x[0]+=dim;
 				}
-				//System.out.println("Snake: x:"+snake_x[0]+" y:"+snake_y[0]);
 				Check();
 				repaint();
 			}
@@ -254,7 +255,6 @@ class Snakes extends JFrame implements KeyListener,Runnable{
     }
 	public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
-        //int flag = 0;
         //System.out.println(keyCode);
         if (keyCode == 37) // Left arrow key
         {
@@ -277,10 +277,82 @@ class Snakes extends JFrame implements KeyListener,Runnable{
             DOWN = LEFT = RIGHT = false;
         }
         if(gameover)		//Close window
+        {
+        	addData();
         	dispose();
+        }
     }
 	public void keyReleased(KeyEvent e) {
     }
+	
+	public void getHighScores(int location, Graphics g)
+    {
+    	String dburl = "jdbc:mysql://localhost:3306/mysql";
+		String user = "root";
+		String pass = "";
+		try
+		{
+			Connection mycon = DriverManager.getConnection(dburl, user, pass);
+			
+			Statement st = mycon.createStatement();
+			ResultSet rs = st.executeQuery("select * from scores where game = 'Snakes'");
+			g.drawString("HIGHSCORES", location + 40, 150);
+			int y = 180;
+			while(rs.next())
+			{
+				g.drawString(rs.getString("Player_name") +"     "+ rs.getString("score"), location + 40, y);
+				y+=30;
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+    }
+	public void addData()
+	{
+
+    	String dburl = "jdbc:mysql://localhost:3306/mysql";
+		String user = "root";
+		String pass = "";
+		try
+		{
+			Connection mycon = DriverManager.getConnection(dburl, user, pass);
+			
+			Statement st = mycon.createStatement();
+			
+			ResultSet rs = st.executeQuery("select count(*) from scores where game = 'Snakes'");
+			
+			if(rs.next())
+			{
+				int x = Integer.parseInt(rs.getString("count(*)"));
+				if(x<3)
+				{
+					st.executeUpdate("insert into scores values('" + name + "', " + score +", 'Snakes')");
+				}
+				else
+				{
+					rs = st.executeQuery("Select * from scores where game = 'Snakes'");
+					while(rs.next())
+					{
+						if(score > Integer.parseInt(rs.getString("score")))
+							break;
+					}
+					if(rs.next())
+					{
+						String sql = "DELETE FROM scores WHERE game = 'Snakes' ORDER BY score LIMIT 1";
+						st.executeUpdate(sql);
+						st.executeUpdate("insert into scores values('" + name + "'," + score +",'Snakes')");
+					}
+				}
+			}
+			
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 }
 
 //Reversi
@@ -310,7 +382,7 @@ class Reversi extends JFrame implements MouseListener
 	{
 		super("Reversi");
 		addMouseListener(this);
-		setSize(550, 600);
+		setSize(700, 600);
 		getContentPane().setBackground(new Color(20, 133, 56));
 		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
@@ -351,7 +423,6 @@ class Reversi extends JFrame implements MouseListener
 				{
 					g.setColor(Color.white);
 					g.drawRect(boxleft+box_size*i, boxtop+box_size*j, box_size, box_size);
-					//g.drawString(board[i][j] + "", boxleft + box_size*i + 15, boxtop + box_size*j +15);
 					if(board[i][j] == 0)
 					{
 						g.setColor(Color.white);
@@ -363,6 +434,7 @@ class Reversi extends JFrame implements MouseListener
 						g.fillOval(boxleft+box_size*i + 5, boxtop+box_size*j + 5, box_size - 10, box_size - 10);
 					}
 				}
+			getHighScores(470, g);
 		}
 		else
 		{
@@ -397,7 +469,6 @@ class Reversi extends JFrame implements MouseListener
 					countB++;
 				else if(board[i][j] == 0)
 					countW++;
-		//System.out.println(countB + " " + countW );
 		if(countW == 0 || (countB + countW == 64 && countB > countW))  //Black wins 
 			winner = 2;
 		else if(countB == 0 || (countB + countW == 64 && countW > countB))  //White wins
@@ -413,7 +484,6 @@ class Reversi extends JFrame implements MouseListener
 		int count = 0, convertTo;
 		boolean yes = false;  //Should it convert the line's enemy to my pieces
 		convertTo = turn % 2;
-		//System.out.println(convertTo);
 		for(int k=0; k<8; k++)
 		{
 			//One loop ot determine whether conversion has to take place, one to convert
@@ -449,7 +519,10 @@ class Reversi extends JFrame implements MouseListener
 		x = e.getX();
 		y = e.getY();
 		if(gameover)	//close window
+		{
+			addData();
 			dispose();
+		}
 		//Boundary conditions
 		clicked_x = (x - boxleft)/box_size;
 		clicked_y = (y - boxtop)/box_size;
@@ -476,6 +549,86 @@ class Reversi extends JFrame implements MouseListener
 	}
 	public void mousePressed(MouseEvent e)
 	{
+	}
+	
+	public void getHighScores(int location, Graphics g)
+    {
+    	String dburl = "jdbc:mysql://localhost:3306/mysql";
+		String user = "root";
+		String pass = "";
+		try
+		{
+			Connection mycon = DriverManager.getConnection(dburl, user, pass);
+			
+			Statement st = mycon.createStatement();
+			ResultSet rs = st.executeQuery("select * from scores where game = 'Reversi'");
+			g.drawString("HIGHSCORES", location + 40, 150);
+			int y = 180;
+			while(rs.next())
+			{
+				g.drawString(rs.getString("Player_name") +"     "+ rs.getString("score"), location + 40, y);
+				y+=30;
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+    }
+	
+	public void addData()
+	{
+
+    	String dburl = "jdbc:mysql://localhost:3306/mysql";
+		String user = "root";
+		String pass = "";
+		try
+		{
+			Connection mycon = DriverManager.getConnection(dburl, user, pass);
+			
+			Statement st = mycon.createStatement();
+			
+			ResultSet rs = st.executeQuery("select count(*) from scores where game = 'Reversi'");
+			if(rs.next())
+			{
+				int x = Integer.parseInt(rs.getString("count(*)"));
+				if(x<3)
+				{
+					if(countB < countW)
+						st.executeUpdate("insert into scores values('" + player1 + "', " + countW +", 'Reversi')");
+					else
+						st.executeUpdate("insert into scores values('" + player2 + "', " + countB +", 'Reversi')");
+				}
+				else
+				{
+					rs = st.executeQuery("Select * from scores where game = 'Reversi'");
+					int score;
+					if(countB > countW)
+						score = countB;
+					else
+						score = countW;
+					while(rs.next())
+					{
+						if(score > Integer.parseInt(rs.getString("score")))
+							break;
+					}
+					if(rs.next())
+					{
+						String sql = "DELETE FROM scores WHERE game = 'Reversi' ORDER BY score LIMIT 1";
+						st.executeUpdate(sql);
+						if(score == countB)
+							st.executeUpdate("insert into scores values('" + player2 + "'," + score +",'Reversi')");
+						else
+							st.executeUpdate("insert into scores values('" + player2 + "'," + score +",'Reversi')");
+					}
+				}
+			}
+			
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 }
 
@@ -509,11 +662,11 @@ class Dodger extends JFrame implements KeyListener
 	{
 		super("Dodger");
 		addKeyListener(this);
-		setSize(720, 620);
+		setSize(880, 620);
 		getContentPane().setBackground(Color.black);
 		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
-		player=name;
+		player = name;
 		play();
 	}
 	
@@ -532,6 +685,7 @@ class Dodger extends JFrame implements KeyListener
 				g.fillRect(rock_x[i], rock_y[i], rock_size, rock_size);
 			g.setColor(Color.cyan);	
 			g.fillOval(player_x, player_y, 20, 20);	
+			getHighScores(frame_size+160, g);
 		}
 		else
 		{
@@ -608,7 +762,10 @@ class Dodger extends JFrame implements KeyListener
     }
 	public void keyPressed(KeyEvent e) {     
 		if(gameover)		//close window
-			dispose();   
+		{
+			dispose();
+			addData();
+		}
     	if(e.getKeyCode() == KeyEvent.VK_RIGHT){					//Only left and right movement possible
     		if(player_x<frame_size+130){
 				player_x += 20;
@@ -623,4 +780,74 @@ class Dodger extends JFrame implements KeyListener
     }
 	public void keyReleased(KeyEvent e) {
     }
+	
+	public void getHighScores(int location, Graphics g)
+    {
+    	String dburl = "jdbc:mysql://localhost:3306/mysql";
+		String user = "root";
+		String pass = "";
+		try
+		{
+			Connection mycon = DriverManager.getConnection(dburl, user, pass);
+			
+			Statement st = mycon.createStatement();
+			ResultSet rs = st.executeQuery("select * from scores where game = 'Dodger' order by score desc");
+			g.drawString("HIGHSCORES", location + 40, 150);
+			int y = 180;
+			while(rs.next())
+			{
+				g.drawString(rs.getString("Player_name") +"     "+ rs.getString("score"), location + 40, y);
+				y+=30;
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+    }
+	
+	public void addData()
+	{
+
+    	String dburl = "jdbc:mysql://localhost:3306/mysql";
+		String user = "root";
+		String pass = "";
+		try
+		{
+			Connection mycon = DriverManager.getConnection(dburl, user, pass);
+			
+			Statement st = mycon.createStatement();
+			
+			ResultSet rs = st.executeQuery("select count(*) from scores where game = 'Dodger'");
+			
+			if(rs.next())
+			{
+				int x = Integer.parseInt(rs.getString("count(*)"));
+				if(x<3)
+				{
+					st.executeUpdate("insert into scores values('" + player + "', " + score +", 'Dodger')");
+				}
+				else
+				{
+					rs = st.executeQuery("Select * from scores where game = 'Dodger'");
+					while(rs.next())
+					{
+						if(score > Integer.parseInt(rs.getString("score")))
+							break;
+					}
+					if(rs.next())
+					{
+						String sql = "DELETE FROM scores WHERE game = 'Dodger' ORDER BY score LIMIT 1";
+						st.executeUpdate(sql);
+						st.executeUpdate("insert into scores values('" + player + "'," + score +",'Dodger')");
+					}
+				}
+			}
+			
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 }
