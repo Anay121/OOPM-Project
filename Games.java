@@ -9,8 +9,8 @@ public class Games extends JFrame implements ActionListener
 {
 	JLabel l = new JLabel("Please enter your name:");
 	JLabel l1 = new JLabel("Which game do you wish to play?");
-	JTextField t = new JTextField("Player", 30);
-	JTextField t1 = new JTextField("Player2", 30);
+	JTextField t = new JTextField("Player", 20);
+	JTextField t1 = new JTextField("Player2", 20);
 	JButton b = new JButton("Dive in!");
 	JPanel p = new JPanel();
 	JPanel p1 = new JPanel();
@@ -24,17 +24,15 @@ public class Games extends JFrame implements ActionListener
 	{
 		b.addActionListener(this);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(700, 500 ); //size of frame
+		setSize(300, 300 ); //size of frame
 
 		t.setMaximumSize(t.getPreferredSize());
 
 		t1.setMaximumSize(t1.getPreferredSize());
 
-		//t1.setVisible(false);
 		j1 = new JRadioButton("Snakes");
 		j2 = new JRadioButton("Reversi");
 		j3 = new JRadioButton("Asteroid Dodger");
-
 		j1.addActionListener(this);
 		j2.addActionListener(this);
 		j3.addActionListener(this);
@@ -49,21 +47,18 @@ public class Games extends JFrame implements ActionListener
 		setVisible(true);
 		p.setVisible(true);
 		p1.setVisible(true);
-		//p.add(space);
-		//space.setBackground(Color.cyan);
-		p.add(l);
-		//p.add(t);
-		//p.add(t1);
-		p1.add(t);
-		p1.add(t1);
-		p1.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-		p.add(p1);
+		
 		p.add(l1);
 		p.add(j1);
 		p.add(j2);
 		p.add(j3);
-	
-		p.add(b);
+		
+		p.add(l);
+		p1.add(t);
+		p1.add(t1);
+		p1.add(b);
+		p1.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		p.add(p1);
 
 		getContentPane().add(p);
 		t1.setVisible(false);
@@ -72,11 +67,14 @@ public class Games extends JFrame implements ActionListener
 	{
 		if(evt.getSource() == j2)
 		{
+			t.setText("Player1");
 			t1.setVisible(true);
 			revalidate();
 		}
-		else if(evt.getSource() == j1 || evt.getSource() == j3)
+		else if(evt.getSource() == j1 || evt.getSource() == j3){
+			t.setText("Player");
 			t1.setVisible(false);
+		}
 		else if(evt.getSource() == b )
 		{
 			String game_name, player1, player2;
