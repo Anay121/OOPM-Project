@@ -6,4 +6,4 @@ We have created three games and a menu for navigating through them, written in J
  ---
  To-do list
   - Beautify menu maybe
-  - Add database connectivity
+  - [x] Add database connectivity
